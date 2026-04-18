@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EEE Makers Hub — Candidate Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #0f1f3d;
+    --navy2: #1a3260;
+    --gold: #e8a020;
+    --cream: #f9f6f0;
+    --text: #1a1a2e;
+    --muted: #6b7280;
+    --border: #e2d9cc;
+    --tag-bg: #eef2ff;
+    --tag-text: #3730a3;
+    --yes-bg: #dcfce7; --yes-text: #166534;
+    --no-bg: #fee2e2;  --no-text: #991b1b;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--text); min-height: 100vh; }
+
+  /* PASSWORD GATE */
+  #gate {
+    min-height: 100vh; display: flex; align-items: center; justify-content: center;
+    background: var(--navy);
+    background-image:
+      repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(255,255,255,0.03) 39px, rgba(255,255,255,0.03) 40px),
+      repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(255,255,255,0.03) 39px, rgba(255,255,255,0.03) 40px);
+  }
+  .gate-box {
+    text-align: center; padding: 3rem 2.5rem;
+    border: 1px solid rgba(255,255,255,0.12);
+    background: rgba(255,255,255,0.04); border-radius: 16px; max-width: 380px; width: 90%;
+  }
+  .gate-logo { font-family: 'Space Mono', monospace; color: var(--gold); font-size: 11px; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 1.5rem; }
+  .gate-title { font-family: 'Space Mono', monospace; color: #fff; font-size: 1.3rem; margin-bottom: 0.5rem; }
+  .gate-sub { color: rgba(255,255,255,0.45); font-size: 0.85rem; margin-bottom: 2rem; }
+  .gate-input {
+    width: 100%; padding: 0.85rem 1rem; background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; color: #fff;
+    font-family: 'Space Mono', monospace; font-size: 0.9rem; letter-spacing: 2px;
+    text-align: center; outline: none; margin-bottom: 1rem; transition: border-color 0.2s;
+  }
+  .gate-input:focus { border-color: var(--gold); }
+  .gate-btn {
+    width: 100%; padding: 0.85rem; background: var(--gold); border: none; border-radius: 8px;
+    font-family: 'DM Sans', sans-serif; font-weight: 600; font-size: 0.95rem;
+    color: var(--navy); cursor: pointer; transition: opacity 0.2s;
+  }
+  .gate-btn:hover { opacity: 0.88; }
+  .gate-err { color: #f87171; font-size: 0.8rem; margin-top: 0.75rem; min-height: 1.2em; }
+
+  /* MAIN APP */
+  #app { display: none; }
+
+  .topbar {
+    background: var(--navy); padding: 1rem 2rem;
+    display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 100;
+    border-bottom: 2px solid var(--gold);
+  }
+  .topbar-brand { font-family: 'Space Mono', monospace; color: #fff; font-size: 0.85rem; }
+  .topbar-brand span { color: var(--gold); }
+  .topbar-count { font-family: 'Space Mono', monospace; color: rgba(255,255,255,0.4); font-size: 0.75rem; }
+
+  .search-wrap { padding: 2rem 2rem 1rem; max-width: 900px; margin: 0 auto; }
+  .search-row { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+  .search-box {
+    flex: 1; min-width: 200px; padding: 0.8rem 1.1rem;
+    border: 1.5px solid var(--border); border-radius: 10px;
+    font-family: 'Space Mono', monospace; font-size: 0.85rem; color: var(--text);
+    background: #fff; outline: none; transition: border-color 0.2s;
+  }
+  .search-box:focus { border-color: var(--navy); }
+  .filter-select {
+    padding: 0.8rem 1rem; border: 1.5px solid var(--border); border-radius: 10px;
+    font-family: 'DM Sans', sans-serif; font-size: 0.85rem; background: #fff;
+    color: var(--text); outline: none; cursor: pointer;
+  }
+  .results-meta { margin-top: 1rem; font-size: 0.8rem; color: var(--muted); font-family: 'Space Mono', monospace; }
+
+  .list { max-width: 900px; margin: 0 auto; padding: 0 2rem 4rem; display: flex; flex-direction: column; gap: 1rem; }
+
+  .card {
+    background: #fff; border: 1px solid var(--border); border-radius: 14px;
+    overflow: hidden; cursor: pointer; transition: box-shadow 0.2s, border-color 0.2s;
+  }
+  .card:hover { box-shadow: 0 4px 24px rgba(15,31,61,0.10); border-color: #b0bcd4; }
+  .card.open { border-color: var(--navy); }
+
+  .card-hdr { display: flex; align-items: center; gap: 1rem; padding: 1rem 1.25rem; }
+  .avatar {
+    width: 44px; height: 44px; border-radius: 50%; background: var(--navy2);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Space Mono', monospace; font-size: 0.8rem; color: #fff; flex-shrink: 0;
+  }
+  .card-name { font-weight: 600; font-size: 1rem; }
+  .card-meta { font-size: 0.8rem; color: var(--muted); margin-top: 2px; }
+  .card-tags { margin-left: auto; display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap; justify-content: flex-end; }
+  .tag { font-size: 0.7rem; font-weight: 500; padding: 3px 10px; border-radius: 20px; background: var(--tag-bg); color: var(--tag-text); }
+  .tag.yes { background: var(--yes-bg); color: var(--yes-text); }
+  .tag.no  { background: var(--no-bg);  color: var(--no-text); }
+  .chevron { margin-left: 0.75rem; color: var(--muted); font-size: 1rem; transition: transform 0.25s; flex-shrink: 0; }
+  .card.open .chevron { transform: rotate(180deg); }
+
+  .card-detail { display: none; padding: 0 1.25rem 1.25rem; border-top: 1px solid var(--border); }
+  .card.open .card-detail { display: block; }
+
+  .section-title {
+    font-family: 'Space Mono', monospace; font-size: 0.65rem; letter-spacing: 2px;
+    color: var(--muted); text-transform: uppercase; margin: 1.1rem 0 0.6rem;
+  }
+  .detail-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 0.6rem; }
+  .detail-cell { background: var(--cream); border-radius: 8px; padding: 0.6rem 0.8rem; }
+  .detail-label { font-size: 0.68rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 3px; }
+  .detail-val { font-size: 0.88rem; color: var(--text); font-weight: 500; }
+
+  .text-block { background: var(--cream); border-radius: 8px; padding: 0.75rem 0.9rem; font-size: 0.85rem; line-height: 1.65; color: var(--text); margin-bottom: 0.5rem; }
+
+  .domain-wrap { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 0.25rem; }
+  .domain-tag { font-size: 0.73rem; padding: 4px 10px; background: #e8edf8; color: #1e3a6e; border-radius: 6px; font-weight: 500; }
+
+  .links-row { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+  .link-btn {
+    font-size: 0.78rem; padding: 5px 14px; border: 1.5px solid var(--border);
+    border-radius: 8px; text-decoration: none; color: var(--navy2); font-weight: 500;
+    transition: background 0.15s, border-color 0.15s;
+  }
+  .link-btn:hover { background: var(--navy); color: #fff; border-color: var(--navy); }
+
+  .empty { text-align: center; padding: 4rem 1rem; color: var(--muted); font-family: 'Space Mono', monospace; font-size: 0.8rem; }
+</style>
+</head>
+<body>
+
+<div id="gate">
+  <div class="gate-box">
+    <div class="gate-logo">EEE Makers Hub</div>
+    <div class="gate-title">Candidate Portal</div>
+    <div class="gate-sub">Interview batch · Restricted access</div>
+    <input class="gate-input" id="pw-input" type="password" placeholder="Enter password" autocomplete="off">
+    <button class="gate-btn" onclick="checkPw()">Enter</button>
+    <div class="gate-err" id="pw-err"></div>
+  </div>
+</div>
+
+<div id="app">
+  <div class="topbar">
+    <div class="topbar-brand">EEE <span>Makers Hub</span> — Candidate Portal</div>
+    <div class="topbar-count" id="topbar-count"></div>
+  </div>
+  <div class="search-wrap">
+    <div class="search-row">
+      <input class="search-box" id="search" type="text" placeholder="Search by name, roll, email…" oninput="render()">
+      <select class="filter-select" id="filter-prior" onchange="render()">
+        <option value="">All applicants</option>
+        <option value="yes">Prior experience</option>
+        <option value="no">No prior experience</option>
+      </select>
+      <select class="filter-select" id="filter-domain" onchange="render()">
+        <option value="">All domains</option>
+      </select>
+    </div>
+    <div class="results-meta" id="results-meta"></div>
+  </div>
+  <div class="list" id="list"></div>
+</div>
+
+<script>
+// ── CHANGE THESE ─────────────────────────────────────────────────
+const PASSWORD = "eeemakers2026";
+const CSV_PATH = "data/responses.csv";
+
+// ── Column indices (0-based) — verify against your CSV ───────────
+const C = {
+  NAME:1,  ROLL:2,  PHONE:3,  EMAIL:4,
+  CV:6,    LI:7,    GH:8,
+  DOMAINS:9, TEAMEXP:10, PRIOR:11, EXPDESC:12,
+  PROJECT:13, AVAIL:14, EVENTS:15, NONTECH:16,
+};
+
+const SHORT_DOMAINS = {
+  "Microcontroller/Embedded Systems (e.g., Arduino, Raspberry Pi)": "Embedded Systems",
+  "Power Electronics and Renewable Energy":  "Power Electronics",
+  "Robotics and Automation":                 "Robotics",
+  "Circuit Design (PCB, Schematic)":         "Circuit Design",
+  "IoT (Internet of Things) and Wireless Communication": "IoT / Wireless",
+  "Programming and Software Development (Python, C++)":  "Python / C++",
+  "Machine Learning/AI Applications":        "ML / AI",
+  "Hardware Troubleshooting and Repair":     "HW Troubleshooting",
+  "Documentation and Technical Writing":     "Documentation",
+};
+const AVAIL_MAP = {"1":"Very Limited","2":"Limited","3":"Moderate","4":"Good","5":"Excellent"};
+const TEAM_MAP  = {"1":"Solo only","2":"Small (2–3)","3":"Medium (4–6)","4":"Large (7–10)","5":"10+"};
+
+let allApplicants = [];
+
+function checkPw() {
+  if (document.getElementById("pw-input").value.trim() === PASSWORD) {
+    document.getElementById("gate").style.display = "none";
+    document.getElementById("app").style.display  = "block";
+    loadCSV();
+  } else {
+    document.getElementById("pw-err").textContent = "Incorrect password.";
+  }
+}
+document.getElementById("pw-input").addEventListener("keydown", e => { if (e.key === "Enter") checkPw(); });
+
+function parseCSVLine(line) {
+  const out = []; let cur = "", inQ = false;
+  for (let ch of line) {
+    if (ch === '"') { inQ = !inQ; }
+    else if (ch === ',' && !inQ) { out.push(cur.trim()); cur = ""; }
+    else cur += ch;
+  }
+  out.push(cur.trim()); return out;
+}
+
+function loadCSV() {
+  fetch(CSV_PATH)
+    .then(r => { if (!r.ok) throw new Error(r.status); return r.text(); })
+    .then(text => {
+      const rows = text.trim().split("\n").slice(1).map(parseCSVLine);
+      const seen = {};
+      rows.forEach(r => { const roll = (r[C.ROLL]||"").trim(); if (roll) seen[roll] = r; });
+      allApplicants = Object.values(seen);
+      populateDomainFilter();
+      document.getElementById("topbar-count").textContent = allApplicants.length + " candidates loaded";
+      render();
+    })
+    .catch(err => {
+      document.getElementById("list").innerHTML =
+        `<div class="empty">Could not load CSV (${err.message}).<br>Ensure data/responses.csv is committed to your repo.</div>`;
+    });
+}
+
+function populateDomainFilter() {
+  const set = new Set();
+  allApplicants.forEach(r => {
+    (r[C.DOMAINS]||"").split(",").forEach(d => {
+      const s = SHORT_DOMAINS[d.trim()] || d.trim();
+      if (s) set.add(s);
+    });
+  });
+  const sel = document.getElementById("filter-domain");
+  [...set].sort().forEach(d => {
+    const o = document.createElement("option"); o.value = d; o.textContent = d; sel.appendChild(o);
+  });
+}
+
+const g        = (row, col) => (row[col] || "").trim();
+const yes      = s => /yes/i.test(s);
+const initials = name => name.split(" ").map(w => w[0]).join("").slice(0,2).toUpperCase();
+const fmtDoms  = raw => raw.split(",").map(d => SHORT_DOMAINS[d.trim()] || d.trim()).filter(Boolean);
+const fmtNon   = raw => raw.split(",").filter(p => p.trim() && !/none of these/i.test(p)).map(p => p.trim());
+const clean    = v => (!v || /^(none|—|no|n\/a|none mentioned)$/i.test(v.trim())) ? "—" : v.trim();
+const hasUrl   = s => s && s.startsWith("http");
+
+function render() {
+  const q    = document.getElementById("search").value.toLowerCase();
+  const fpr  = document.getElementById("filter-prior").value;
+  const fdom = document.getElementById("filter-domain").value;
+
+  const filtered = allApplicants.filter(row => {
+    if (q && ![g(row,C.NAME), g(row,C.ROLL), g(row,C.EMAIL)].some(v => v.toLowerCase().includes(q))) return false;
+    if (fpr === "yes" && !yes(g(row,C.PRIOR))) return false;
+    if (fpr === "no"  &&  yes(g(row,C.PRIOR))) return false;
+    if (fdom && !fmtDoms(g(row,C.DOMAINS)).includes(fdom)) return false;
+    return true;
+  });
+
+  document.getElementById("results-meta").textContent =
+    `Showing ${filtered.length} of ${allApplicants.length} applicants`;
+
+  const list = document.getElementById("list");
+  if (!filtered.length) { list.innerHTML = '<div class="empty">No candidates match your search.</div>'; return; }
+  list.innerHTML = filtered.map(row => cardHTML(row)).join("");
+
+  list.querySelectorAll(".card").forEach(card => {
+    card.addEventListener("click", () => {
+      const isOpen = card.classList.contains("open");
+      list.querySelectorAll(".card").forEach(c => c.classList.remove("open"));
+      if (!isOpen) card.classList.add("open");
+    });
+  });
+}
+
+function cardHTML(row) {
+  const name    = g(row, C.NAME) || "Unknown";
+  const roll    = g(row, C.ROLL) || "—";
+  const phone   = g(row, C.PHONE) || "—";
+  const email   = g(row, C.EMAIL) || "—";
+  const prior   = yes(g(row, C.PRIOR));
+  const avail   = AVAIL_MAP[g(row,C.AVAIL)]   || g(row,C.AVAIL)   || "—";
+  const team    = TEAM_MAP[g(row,C.TEAMEXP)]  || g(row,C.TEAMEXP) || "—";
+  const domains = fmtDoms(g(row,C.DOMAINS));
+  const nontech = fmtNon(g(row,C.NONTECH));
+
+  const domainTags = domains.map(d => `<span class="domain-tag">${d}</span>`).join("");
+  const linkBtns   = [
+    hasUrl(g(row,C.CV)) ? `<a class="link-btn" href="${g(row,C.CV)}" target="_blank">📄 CV</a>` : "",
+    hasUrl(g(row,C.LI)) ? `<a class="link-btn" href="${g(row,C.LI)}" target="_blank">💼 LinkedIn</a>` : "",
+    hasUrl(g(row,C.GH)) ? `<a class="link-btn" href="${g(row,C.GH)}" target="_blank">💻 GitHub</a>` : "",
+  ].filter(Boolean).join("");
+
+  return `
+  <div class="card">
+    <div class="card-hdr">
+      <div class="avatar">${initials(name)}</div>
+      <div>
+        <div class="card-name">${name}</div>
+        <div class="card-meta">Roll: ${roll} · ${phone}</div>
+      </div>
+      <div class="card-tags">
+        ${domains.slice(0,2).map(d=>`<span class="tag">${d}</span>`).join("")}
+        <span class="tag ${prior?'yes':'no'}">${prior ? "Exp ✓" : "No Exp"}</span>
+      </div>
+      <div class="chevron">▾</div>
+    </div>
+    <div class="card-detail">
+      <div class="section-title">Contact & Links</div>
+      <div class="detail-grid">
+        <div class="detail-cell"><div class="detail-label">Email</div><div class="detail-val">${email}</div></div>
+        <div class="detail-cell"><div class="detail-label">Phone</div><div class="detail-val">${phone}</div></div>
+        <div class="detail-cell"><div class="detail-label">Availability</div><div class="detail-val">${avail}</div></div>
+        <div class="detail-cell"><div class="detail-label">Team Experience</div><div class="detail-val">${team}</div></div>
+      </div>
+      ${linkBtns ? `<div class="links-row" style="margin-top:0.6rem">${linkBtns}</div>` : ""}
+
+      <div class="section-title">Technical Domains</div>
+      <div class="domain-wrap">${domainTags || "<span style='color:var(--muted);font-size:0.85rem'>—</span>"}</div>
+
+      <div class="section-title">Non-Technical Skills</div>
+      <div class="text-block">${nontech.length ? nontech.join(", ") : "—"}</div>
+
+      <div class="section-title">Experience & Background</div>
+      <div class="text-block">${clean(g(row,C.EXPDESC))}</div>
+
+      <div class="section-title">Projects / Technical Work</div>
+      <div class="text-block">${clean(g(row,C.PROJECT))}</div>
+
+      <div class="section-title">EEE Makers Hub Events Attended</div>
+      <div class="text-block">${clean(g(row,C.EVENTS))}</div>
+    </div>
+  </div>`;
+}
+</script>
+</body>
+</html>
