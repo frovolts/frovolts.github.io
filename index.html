@@ -120,13 +120,13 @@
   .cell-lbl { font-size: .64rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 3px; }
   .cell-val { font-size: .86rem; color: var(--text); font-weight: 500; line-height: 1.4; word-break: break-word; }
 
-  /* Improved Text Blocks to Handle Links & Paragraphs */
+  /* Upgraded Text Block Handling */
   .textblock { 
     background: var(--cream); border-radius: 8px; padding: .7rem .9rem; 
     font-size: .84rem; line-height: 1.7; color: var(--text); 
     word-break: break-word; 
   }
-  .textblock a { color: var(--navy2); font-weight: 600; text-decoration: underline; }
+  .textblock a { color: var(--navy2); font-weight: 600; text-decoration: underline; word-break: break-all; }
   .textblock a:hover { color: var(--gold); }
 
   .pill-row { display: flex; flex-wrap: wrap; gap: .4rem; }
@@ -168,7 +168,7 @@
 
 <div id="app">
   <div class="topbar">
-    <div class="topbar-brand">EEE <span>Makers Hub</span> — Candidate Portal by GEMINI</div>
+    <div class="topbar-brand">EEE <span>Makers Hub</span> — Candidate Portal</div>
     <div class="topbar-count" id="topbar-count"></div>
   </div>
 
@@ -238,19 +238,26 @@ function checkPw() {
 }
 document.getElementById("pw-input").addEventListener("keydown", e => { if (e.key === "Enter") checkPw(); });
 
-// ── CSV PARSER ────────────────────────────────────────────────────
+// ── UPGRADED CSV PARSER ───────────────────────────────────────────
+// This perfectly handles real "Enter" linebreaks inside Google Form textboxes
 function parseCSV(text) {
-  const lines = text.trim().split(/\r?\n/);
-  return lines.map(line => {
-    const out = []; let cur = "", inQ = false;
-    for (const ch of line) {
-      if (ch === '"') { inQ = !inQ; }
-      else if (ch === ',' && !inQ) { out.push(cur.trim()); cur = ""; }
-      else cur += ch;
+  const out = [];
+  let row = [], cur = "", inQ = false;
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i];
+    if (ch === '"') {
+      if (inQ && text[i+1] === '"') { cur += '"'; i++; } // Escaped quotes
+      else { inQ = !inQ; }
     }
-    out.push(cur.trim());
-    return out;
-  });
+    else if (ch === ',' && !inQ) { row.push(cur.trim()); cur = ""; }
+    else if ((ch === '\n' || ch === '\r') && !inQ) {
+      if (ch === '\r' && text[i+1] === '\n') i++;
+      row.push(cur.trim()); out.push(row); row = []; cur = "";
+    }
+    else cur += ch;
+  }
+  if (cur || row.length) { row.push(cur.trim()); out.push(row); }
+  return out;
 }
 
 function loadCSV() {
@@ -258,7 +265,6 @@ function loadCSV() {
     .then(r => { if (!r.ok) throw new Error("HTTP " + r.status); return r.text(); })
     .then(text => {
       const rows = parseCSV(text).slice(1).filter(r => (r[C.ROLL]||"").trim());
-      // deduplicate — keep last submission per roll
       const seen = {};
       rows.forEach(r => { seen[r[C.ROLL].trim()] = r; });
       all = Object.values(seen);
@@ -295,7 +301,7 @@ const fmtDoms = raw => (raw||"").split(",").map(d => DOM_SHORT[d.trim()] || d.tr
 const fmtNon  = raw => (raw||"").split(",").map(p=>p.trim()).filter(p=>p && !/none of these/i.test(p));
 const availPips = n => Array.from({length:5},(_,i)=>`<span class="avail-pip${i<n?' on':''}"></span>`).join("");
 
-// URL Extractor (Fixes URLs even if missing https://)
+// Profile Links Extractor
 const makeUrl = s => {
   if (blank(s)) return null;
   let url = s.trim();
@@ -307,15 +313,48 @@ const makeUrl = s => {
   return url;
 };
 
-// Text Linkifier (Finds links in text paragraphs and makes them clickable + keeps newlines)
-const escapeHTML = str => str.replace(/[&<>'"]/g, tag => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'}[tag]));
+// ── DOM-BASED TEXT FORMATTER (Bulletproof, zero HTML bleeding) ────
 const formatText = text => {
   if (blank(text)) return "—";
-  let safeText = escapeHTML(text);
-  // Auto-detect and linkify URLs
-  safeText = safeText.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank" onclick="event.stopPropagation()">$1</a>');
-  // Preserve line breaks
-  return safeText.replace(/\n/g, '<br>');
+  
+  const div = document.createElement('div');
+  const lines = text.split(/\r?\n/);
+  
+  lines.forEach((line, index) => {
+    // Split the line by URLs, keeping the URL as a separate item in the array
+    const parts = line.split(/(https?:\/\/[^\s]+)/g);
+    
+    parts.forEach(part => {
+      if (part.startsWith('http')) {
+        let url = part;
+        let punctuation = "";
+        
+        // Strip out periods/commas if a student ended their sentence right after the link!
+        if (/[.,;!?)]$/.test(url)) {
+          punctuation = url.slice(-1);
+          url = url.slice(0, -1);
+        }
+        
+        const a = document.createElement('a');
+        a.href = url;
+        a.target = '_blank';
+        a.onclick = e => e.stopPropagation();
+        a.textContent = url;
+        div.appendChild(a);
+        
+        if (punctuation) div.appendChild(document.createTextNode(punctuation));
+      } else if (part) {
+        div.appendChild(document.createTextNode(part));
+      }
+    });
+    
+    // Add real <br> elements between lines instead of string tags
+    if (index < lines.length - 1) {
+      div.appendChild(document.createElement('br'));
+    }
+  });
+  
+  return div.innerHTML;
 };
 
 // ── RENDER ────────────────────────────────────────────────────────
@@ -353,7 +392,7 @@ function render() {
 
 // ── CARD ─────────────────────────────────────────────────────────
 function cardHTML(r, num) {
-  const ts      = g(r, C.TS).split(" ")[0] || "—"; // Date applied
+  const ts      = g(r, C.TS).split(" ")[0] || "—";
   const name    = g(r, C.NAME)  || "Unknown";
   const roll    = g(r, C.ROLL)  || "—";
   const phone   = g(r, C.PHONE) || "—";
