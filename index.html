@@ -7,182 +7,222 @@
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
   :root {
-    --navy: #0f1f3d;
-    --navy2: #1a3260;
-    --gold: #e8a020;
-    --cream: #f9f6f0;
-    --text: #1a1a2e;
-    --muted: #6b7280;
-    --border: #e2d9cc;
-    --tag-bg: #eef2ff;
-    --tag-text: #3730a3;
-    --yes-bg: #dcfce7; --yes-text: #166534;
-    --no-bg: #fee2e2;  --no-text: #991b1b;
+    --navy:    #0f1f3d;
+    --navy2:   #1a3260;
+    --gold:    #e8a020;
+    --cream:   #f9f6f0;
+    --text:    #1a1a2e;
+    --muted:   #6b7280;
+    --border:  #e2d9cc;
+    --tag-bg:  #eef2ff; --tag-txt: #3730a3;
+    --yes-bg:  #dcfce7; --yes-txt: #166534;
+    --no-bg:   #fff3cd; --no-txt:  #856404;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--text); min-height: 100vh; }
 
-  /* PASSWORD GATE */
+  /* ── GATE ── */
   #gate {
     min-height: 100vh; display: flex; align-items: center; justify-content: center;
     background: var(--navy);
     background-image:
-      repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(255,255,255,0.03) 39px, rgba(255,255,255,0.03) 40px),
-      repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(255,255,255,0.03) 39px, rgba(255,255,255,0.03) 40px);
+      repeating-linear-gradient(0deg,  transparent, transparent 39px, rgba(255,255,255,.03) 39px, rgba(255,255,255,.03) 40px),
+      repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(255,255,255,.03) 39px, rgba(255,255,255,.03) 40px);
   }
   .gate-box {
-    text-align: center; padding: 3rem 2.5rem;
-    border: 1px solid rgba(255,255,255,0.12);
-    background: rgba(255,255,255,0.04); border-radius: 16px; max-width: 380px; width: 90%;
+    text-align: center; padding: 3rem 2.5rem; max-width: 380px; width: 90%;
+    border: 1px solid rgba(255,255,255,.12); background: rgba(255,255,255,.04); border-radius: 16px;
   }
-  .gate-logo { font-family: 'Space Mono', monospace; color: var(--gold); font-size: 11px; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 1.5rem; }
-  .gate-title { font-family: 'Space Mono', monospace; color: #fff; font-size: 1.3rem; margin-bottom: 0.5rem; }
-  .gate-sub { color: rgba(255,255,255,0.45); font-size: 0.85rem; margin-bottom: 2rem; }
+  .gate-logo  { font-family: 'Space Mono', monospace; color: var(--gold); font-size: 11px; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 1.5rem; }
+  .gate-title { font-family: 'Space Mono', monospace; color: #fff; font-size: 1.3rem; margin-bottom: .5rem; }
+  .gate-sub   { color: rgba(255,255,255,.45); font-size: .85rem; margin-bottom: 2rem; }
   .gate-input {
-    width: 100%; padding: 0.85rem 1rem; background: rgba(255,255,255,0.07);
-    border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; color: #fff;
-    font-family: 'Space Mono', monospace; font-size: 0.9rem; letter-spacing: 2px;
-    text-align: center; outline: none; margin-bottom: 1rem; transition: border-color 0.2s;
+    width: 100%; padding: .85rem 1rem; background: rgba(255,255,255,.07);
+    border: 1px solid rgba(255,255,255,.15); border-radius: 8px; color: #fff;
+    font-family: 'Space Mono', monospace; font-size: .9rem; letter-spacing: 2px;
+    text-align: center; outline: none; margin-bottom: 1rem; transition: border-color .2s;
   }
   .gate-input:focus { border-color: var(--gold); }
   .gate-btn {
-    width: 100%; padding: 0.85rem; background: var(--gold); border: none; border-radius: 8px;
-    font-family: 'DM Sans', sans-serif; font-weight: 600; font-size: 0.95rem;
-    color: var(--navy); cursor: pointer; transition: opacity 0.2s;
+    width: 100%; padding: .85rem; background: var(--gold); border: none; border-radius: 8px;
+    font-family: 'DM Sans', sans-serif; font-weight: 600; font-size: .95rem;
+    color: var(--navy); cursor: pointer; transition: opacity .2s;
   }
-  .gate-btn:hover { opacity: 0.88; }
-  .gate-err { color: #f87171; font-size: 0.8rem; margin-top: 0.75rem; min-height: 1.2em; }
+  .gate-btn:hover { opacity: .88; }
+  .gate-err { color: #f87171; font-size: .8rem; margin-top: .75rem; min-height: 1.2em; }
 
-  /* MAIN APP */
+  /* ── APP ── */
   #app { display: none; }
 
   .topbar {
     background: var(--navy); padding: 1rem 2rem;
     display: flex; align-items: center; justify-content: space-between;
-    position: sticky; top: 0; z-index: 100;
-    border-bottom: 2px solid var(--gold);
+    position: sticky; top: 0; z-index: 100; border-bottom: 2px solid var(--gold);
   }
-  .topbar-brand { font-family: 'Space Mono', monospace; color: #fff; font-size: 0.85rem; }
+  .topbar-brand { font-family: 'Space Mono', monospace; color: #fff; font-size: .85rem; }
   .topbar-brand span { color: var(--gold); }
-  .topbar-count { font-family: 'Space Mono', monospace; color: rgba(255,255,255,0.4); font-size: 0.75rem; }
+  .topbar-count { font-family: 'Space Mono', monospace; color: rgba(255,255,255,.4); font-size: .75rem; }
 
   .search-wrap { padding: 2rem 2rem 1rem; max-width: 900px; margin: 0 auto; }
-  .search-row { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+  .search-row  { display: flex; gap: .75rem; flex-wrap: wrap; }
   .search-box {
-    flex: 1; min-width: 200px; padding: 0.8rem 1.1rem;
+    flex: 1; min-width: 200px; padding: .8rem 1.1rem;
     border: 1.5px solid var(--border); border-radius: 10px;
-    font-family: 'Space Mono', monospace; font-size: 0.85rem; color: var(--text);
-    background: #fff; outline: none; transition: border-color 0.2s;
+    font-family: 'Space Mono', monospace; font-size: .85rem; color: var(--text);
+    background: #fff; outline: none; transition: border-color .2s;
   }
   .search-box:focus { border-color: var(--navy); }
-  .filter-select {
-    padding: 0.8rem 1rem; border: 1.5px solid var(--border); border-radius: 10px;
-    font-family: 'DM Sans', sans-serif; font-size: 0.85rem; background: #fff;
+  .filter-sel {
+    padding: .8rem 1rem; border: 1.5px solid var(--border); border-radius: 10px;
+    font-family: 'DM Sans', sans-serif; font-size: .85rem; background: #fff;
     color: var(--text); outline: none; cursor: pointer;
   }
-  .results-meta { margin-top: 1rem; font-size: 0.8rem; color: var(--muted); font-family: 'Space Mono', monospace; }
+  .results-meta { margin-top: .9rem; font-size: .78rem; color: var(--muted); font-family: 'Space Mono', monospace; }
 
-  .list { max-width: 900px; margin: 0 auto; padding: 0 2rem 4rem; display: flex; flex-direction: column; gap: 1rem; }
+  .list { max-width: 900px; margin: 0 auto; padding: .5rem 2rem 4rem; display: flex; flex-direction: column; gap: .85rem; }
 
+  /* ── CARD ── */
   .card {
     background: #fff; border: 1px solid var(--border); border-radius: 14px;
-    overflow: hidden; cursor: pointer; transition: box-shadow 0.2s, border-color 0.2s;
+    overflow: hidden; cursor: pointer; transition: box-shadow .2s, border-color .2s;
   }
-  .card:hover { box-shadow: 0 4px 24px rgba(15,31,61,0.10); border-color: #b0bcd4; }
-  .card.open { border-color: var(--navy); }
+  .card:hover { box-shadow: 0 4px 20px rgba(15,31,61,.09); border-color: #b0bcd4; }
+  .card.open  { border-color: var(--navy2); }
 
-  .card-hdr { display: flex; align-items: center; gap: 1rem; padding: 1rem 1.25rem; }
+  .card-hdr { display: flex; align-items: center; gap: 1rem; padding: .95rem 1.25rem; }
   .avatar {
     width: 44px; height: 44px; border-radius: 50%; background: var(--navy2);
     display: flex; align-items: center; justify-content: center;
-    font-family: 'Space Mono', monospace; font-size: 0.8rem; color: #fff; flex-shrink: 0;
+    font-family: 'Space Mono', monospace; font-size: .75rem; color: #fff; flex-shrink: 0;
   }
-  .card-name { font-weight: 600; font-size: 1rem; }
-  .card-meta { font-size: 0.8rem; color: var(--muted); margin-top: 2px; }
-  .card-tags { margin-left: auto; display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap; justify-content: flex-end; }
-  .tag { font-size: 0.7rem; font-weight: 500; padding: 3px 10px; border-radius: 20px; background: var(--tag-bg); color: var(--tag-text); }
-  .tag.yes { background: var(--yes-bg); color: var(--yes-text); }
-  .tag.no  { background: var(--no-bg);  color: var(--no-text); }
-  .chevron { margin-left: 0.75rem; color: var(--muted); font-size: 1rem; transition: transform 0.25s; flex-shrink: 0; }
+  .card-name { font-weight: 600; font-size: .97rem; }
+  .card-sub  { font-size: .78rem; color: var(--muted); margin-top: 2px; font-family: 'Space Mono', monospace; }
+  .card-tags { margin-left: auto; display: flex; gap: .4rem; align-items: center; flex-wrap: wrap; justify-content: flex-end; }
+  .tag { font-size: .68rem; font-weight: 500; padding: 3px 9px; border-radius: 20px; background: var(--tag-bg); color: var(--tag-txt); white-space: nowrap; }
+  .tag.yes { background: var(--yes-bg); color: var(--yes-txt); }
+  .tag.no  { background: var(--no-bg);  color: var(--no-txt);  }
+  .chevron { margin-left: .75rem; color: var(--muted); font-size: .95rem; transition: transform .25s; flex-shrink: 0; }
   .card.open .chevron { transform: rotate(180deg); }
 
-  .card-detail { display: none; padding: 0 1.25rem 1.25rem; border-top: 1px solid var(--border); }
+  /* ── DETAIL ── */
+  .card-detail { display: none; border-top: 1px solid var(--border); padding: 1.1rem 1.25rem 1.4rem; }
   .card.open .card-detail { display: block; }
 
-  .section-title {
-    font-family: 'Space Mono', monospace; font-size: 0.65rem; letter-spacing: 2px;
-    color: var(--muted); text-transform: uppercase; margin: 1.1rem 0 0.6rem;
+  .sec { margin-top: 1.1rem; }
+  .sec:first-child { margin-top: 0; }
+  .sec-title {
+    font-family: 'Space Mono', monospace; font-size: .6rem; letter-spacing: 2px;
+    color: var(--muted); text-transform: uppercase; margin-bottom: .5rem;
   }
-  .detail-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 0.6rem; }
-  .detail-cell { background: var(--cream); border-radius: 8px; padding: 0.6rem 0.8rem; }
-  .detail-label { font-size: 0.68rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 3px; }
-  .detail-val { font-size: 0.88rem; color: var(--text); font-weight: 500; }
 
-  .text-block { background: var(--cream); border-radius: 8px; padding: 0.75rem 0.9rem; font-size: 0.85rem; line-height: 1.65; color: var(--text); margin-bottom: 0.5rem; }
+  .grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: .5rem; }
+  .cell { background: var(--cream); border-radius: 8px; padding: .55rem .8rem; }
+  .cell-lbl { font-size: .64rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 3px; }
+  .cell-val { font-size: .86rem; color: var(--text); font-weight: 500; line-height: 1.4; }
 
-  .domain-wrap { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 0.25rem; }
-  .domain-tag { font-size: 0.73rem; padding: 4px 10px; background: #e8edf8; color: #1e3a6e; border-radius: 6px; font-weight: 500; }
+  .textblock { background: var(--cream); border-radius: 8px; padding: .7rem .9rem; font-size: .84rem; line-height: 1.7; color: var(--text); }
 
-  .links-row { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+  .pill-row { display: flex; flex-wrap: wrap; gap: .4rem; }
+  .pill-dom { font-size: .71rem; padding: 4px 10px; background: #e8edf8; color: #1e3a6e; border-radius: 6px; font-weight: 500; }
+  .pill-non { font-size: .71rem; padding: 4px 10px; background: #f0fdf4; color: #166534; border-radius: 6px; font-weight: 500; }
+
+  .link-row { display: flex; gap: .6rem; flex-wrap: wrap; }
   .link-btn {
-    font-size: 0.78rem; padding: 5px 14px; border: 1.5px solid var(--border);
+    font-size: .78rem; padding: 5px 13px; border: 1.5px solid var(--border);
     border-radius: 8px; text-decoration: none; color: var(--navy2); font-weight: 500;
-    transition: background 0.15s, border-color 0.15s;
+    transition: background .15s, border-color .15s;
   }
   .link-btn:hover { background: var(--navy); color: #fff; border-color: var(--navy); }
 
-  .empty { text-align: center; padding: 4rem 1rem; color: var(--muted); font-family: 'Space Mono', monospace; font-size: 0.8rem; }
+  .num-badge {
+    display: inline-block; background: var(--navy); color: #fff;
+    font-family: 'Space Mono', monospace; font-size: .6rem;
+    padding: 2px 6px; border-radius: 4px; margin-right: .5rem; vertical-align: middle;
+  }
+  .avail-bar { display: flex; gap: 4px; align-items: center; margin-top: 4px; }
+  .avail-pip { width: 18px; height: 7px; border-radius: 3px; background: #dde3f0; }
+  .avail-pip.on { background: var(--navy2); }
+
+  .empty { text-align: center; padding: 4rem 1rem; color: var(--muted); font-family: 'Space Mono', monospace; font-size: .8rem; line-height: 2; }
 </style>
 </head>
 <body>
 
+<!-- GATE -->
 <div id="gate">
   <div class="gate-box">
     <div class="gate-logo">EEE Makers Hub</div>
     <div class="gate-title">Candidate Portal</div>
-    <div class="gate-sub">Interview batch · Restricted access</div>
+    <div class="gate-sub">Session 2024–25 · Restricted access</div>
     <input class="gate-input" id="pw-input" type="password" placeholder="Enter password" autocomplete="off">
     <button class="gate-btn" onclick="checkPw()">Enter</button>
     <div class="gate-err" id="pw-err"></div>
   </div>
 </div>
 
+<!-- APP -->
 <div id="app">
   <div class="topbar">
     <div class="topbar-brand">EEE <span>Makers Hub</span> — Candidate Portal</div>
     <div class="topbar-count" id="topbar-count"></div>
   </div>
+
   <div class="search-wrap">
     <div class="search-row">
       <input class="search-box" id="search" type="text" placeholder="Search by name, roll, email…" oninput="render()">
-      <select class="filter-select" id="filter-prior" onchange="render()">
+      <select class="filter-sel" id="f-prior" onchange="render()">
         <option value="">All applicants</option>
-        <option value="yes">Prior experience</option>
+        <option value="yes">Has prior experience</option>
         <option value="no">No prior experience</option>
       </select>
-      <select class="filter-select" id="filter-domain" onchange="render()">
+      <select class="filter-sel" id="f-domain" onchange="render()">
         <option value="">All domains</option>
+      </select>
+      <select class="filter-sel" id="f-avail" onchange="render()">
+        <option value="">Any availability</option>
+        <option value="5">Avail: 5 (max)</option>
+        <option value="4">Avail: 4+</option>
+        <option value="3">Avail: 3+</option>
       </select>
     </div>
     <div class="results-meta" id="results-meta"></div>
   </div>
+
   <div class="list" id="list"></div>
 </div>
 
 <script>
-// ── CHANGE THESE ─────────────────────────────────────────────────
-const PASSWORD = "eeemakers2026";
+// ── CHANGE BEFORE DEPLOYING ───────────────────────────────────────
+const PASSWORD = "eeemakers2025";   // ← set your actual password here
 const CSV_PATH = "data/responses.csv";
 
-// ── Column indices (0-based) — verify against your CSV ───────────
+// ── Column map (0-based) ─────────────────────────────────────────
+// [0]  Timestamp
+// [1]  Full Name
+// [2]  KUET Roll Number
+// [3]  Phone number
+// [4]  Email Address
+// [5]  Current Academic Year
+// [6]  CV/portfolio link
+// [7]  LinkedIn profile
+// [8]  GitHub profile
+// [9]  Technical domains
+// [10] Experience level (1–5 self-rated)
+// [11] Prior club/competition participation
+// [12] Role description / how they'd get involved
+// [13] Most significant project / achievement
+// [14] Availability (1–5 hrs/week)
+// [15] EEE Makers Hub events attended
+// [16] Non-technical skills
+// [17] Commitment agreement
 const C = {
-  NAME:1,  ROLL:2,  PHONE:3,  EMAIL:4,
-  CV:6,    LI:7,    GH:8,
-  DOMAINS:9, TEAMEXP:10, PRIOR:11, EXPDESC:12,
-  PROJECT:13, AVAIL:14, EVENTS:15, NONTECH:16,
+  TS:0, NAME:1, ROLL:2, PHONE:3, EMAIL:4, YEAR:5,
+  CV:6, LI:7, GH:8,
+  DOMAINS:9, EXPLVL:10, PRIOR:11, PRIORDESC:12,
+  PROJECT:13, AVAIL:14, EVENTS:15, NONTECH:16, COMMIT:17
 };
 
-const SHORT_DOMAINS = {
+const DOM_SHORT = {
   "Microcontroller/Embedded Systems (e.g., Arduino, Raspberry Pi)": "Embedded Systems",
   "Power Electronics and Renewable Energy":  "Power Electronics",
   "Robotics and Automation":                 "Robotics",
@@ -193,157 +233,219 @@ const SHORT_DOMAINS = {
   "Hardware Troubleshooting and Repair":     "HW Troubleshooting",
   "Documentation and Technical Writing":     "Documentation",
 };
-const AVAIL_MAP = {"1":"Very Limited","2":"Limited","3":"Moderate","4":"Good","5":"Excellent"};
-const TEAM_MAP  = {"1":"Solo only","2":"Small (2–3)","3":"Medium (4–6)","4":"Large (7–10)","5":"10+"};
 
-let allApplicants = [];
+const AVAIL_LBL = {"1":"~1 hr/wk","2":"~2 hrs/wk","3":"~3 hrs/wk","4":"~4 hrs/wk","5":"5+ hrs/wk"};
+const EXPLVL_LBL = {"1":"Beginner","2":"Novice","3":"Intermediate","4":"Advanced","5":"Expert"};
 
+let all = [];
+
+// ── PASSWORD ──────────────────────────────────────────────────────
 function checkPw() {
   if (document.getElementById("pw-input").value.trim() === PASSWORD) {
     document.getElementById("gate").style.display = "none";
     document.getElementById("app").style.display  = "block";
     loadCSV();
   } else {
-    document.getElementById("pw-err").textContent = "Incorrect password.";
+    document.getElementById("pw-err").textContent = "Incorrect password. Try again.";
   }
 }
 document.getElementById("pw-input").addEventListener("keydown", e => { if (e.key === "Enter") checkPw(); });
 
-function parseCSVLine(line) {
-  const out = []; let cur = "", inQ = false;
-  for (let ch of line) {
-    if (ch === '"') { inQ = !inQ; }
-    else if (ch === ',' && !inQ) { out.push(cur.trim()); cur = ""; }
-    else cur += ch;
-  }
-  out.push(cur.trim()); return out;
+// ── CSV PARSER ────────────────────────────────────────────────────
+function parseCSV(text) {
+  const lines = text.trim().split(/\r?\n/);
+  return lines.map(line => {
+    const out = []; let cur = "", inQ = false;
+    for (const ch of line) {
+      if (ch === '"') { inQ = !inQ; }
+      else if (ch === ',' && !inQ) { out.push(cur.trim()); cur = ""; }
+      else cur += ch;
+    }
+    out.push(cur.trim());
+    return out;
+  });
 }
 
 function loadCSV() {
   fetch(CSV_PATH)
-    .then(r => { if (!r.ok) throw new Error(r.status); return r.text(); })
+    .then(r => { if (!r.ok) throw new Error("HTTP " + r.status); return r.text(); })
     .then(text => {
-      const rows = text.trim().split("\n").slice(1).map(parseCSVLine);
+      const rows = parseCSV(text).slice(1).filter(r => (r[C.ROLL]||"").trim());
+      // deduplicate — keep last submission per roll
       const seen = {};
-      rows.forEach(r => { const roll = (r[C.ROLL]||"").trim(); if (roll) seen[roll] = r; });
-      allApplicants = Object.values(seen);
-      populateDomainFilter();
-      document.getElementById("topbar-count").textContent = allApplicants.length + " candidates loaded";
+      rows.forEach(r => { seen[r[C.ROLL].trim()] = r; });
+      all = Object.values(seen);
+      buildDomainFilter();
+      document.getElementById("topbar-count").textContent = all.length + " candidates loaded";
       render();
     })
     .catch(err => {
       document.getElementById("list").innerHTML =
-        `<div class="empty">Could not load CSV (${err.message}).<br>Ensure data/responses.csv is committed to your repo.</div>`;
+        `<div class="empty">⚠ Could not load data (${err.message})<br>Make sure <code>data/responses.csv</code> is committed to your repo.</div>`;
     });
 }
 
-function populateDomainFilter() {
+function buildDomainFilter() {
   const set = new Set();
-  allApplicants.forEach(r => {
+  all.forEach(r => {
     (r[C.DOMAINS]||"").split(",").forEach(d => {
-      const s = SHORT_DOMAINS[d.trim()] || d.trim();
+      const s = DOM_SHORT[d.trim()] || d.trim();
       if (s) set.add(s);
     });
   });
-  const sel = document.getElementById("filter-domain");
+  const sel = document.getElementById("f-domain");
   [...set].sort().forEach(d => {
     const o = document.createElement("option"); o.value = d; o.textContent = d; sel.appendChild(o);
   });
 }
 
-const g        = (row, col) => (row[col] || "").trim();
-const yes      = s => /yes/i.test(s);
-const initials = name => name.split(" ").map(w => w[0]).join("").slice(0,2).toUpperCase();
-const fmtDoms  = raw => raw.split(",").map(d => SHORT_DOMAINS[d.trim()] || d.trim()).filter(Boolean);
-const fmtNon   = raw => raw.split(",").filter(p => p.trim() && !/none of these/i.test(p)).map(p => p.trim());
-const clean    = v => (!v || /^(none|—|no|n\/a|none mentioned)$/i.test(v.trim())) ? "—" : v.trim();
-const hasUrl   = s => s && s.startsWith("http");
+// ── HELPERS ───────────────────────────────────────────────────────
+const g       = (r, c) => (r[c] || "").trim();
+const hasPri  = r => /^yes$/i.test(g(r, C.PRIOR));
+const hasUrl  = s => s && s.startsWith("http");
+const blank   = v => !v || /^(none|—|no|n\/a|none mentioned|none of these)$/i.test(v);
+const clean   = v => blank(v) ? "—" : v;
+const inits   = n => n.split(" ").filter(Boolean).map(w => w[0]).join("").slice(0,2).toUpperCase();
+const fmtDoms = raw => (raw||"").split(",").map(d => DOM_SHORT[d.trim()] || d.trim()).filter(Boolean);
+const fmtNon  = raw => (raw||"").split(",").map(p=>p.trim()).filter(p=>p && !/none of these/i.test(p));
+const availPips = n => Array.from({length:5},(_,i)=>`<span class="avail-pip${i<n?' on':''}"></span>`).join("");
 
+// ── RENDER ────────────────────────────────────────────────────────
 function render() {
   const q    = document.getElementById("search").value.toLowerCase();
-  const fpr  = document.getElementById("filter-prior").value;
-  const fdom = document.getElementById("filter-domain").value;
+  const fpr  = document.getElementById("f-prior").value;
+  const fdom = document.getElementById("f-domain").value;
+  const favl = parseInt(document.getElementById("f-avail").value) || 0;
 
-  const filtered = allApplicants.filter(row => {
-    if (q && ![g(row,C.NAME), g(row,C.ROLL), g(row,C.EMAIL)].some(v => v.toLowerCase().includes(q))) return false;
-    if (fpr === "yes" && !yes(g(row,C.PRIOR))) return false;
-    if (fpr === "no"  &&  yes(g(row,C.PRIOR))) return false;
-    if (fdom && !fmtDoms(g(row,C.DOMAINS)).includes(fdom)) return false;
+  const filtered = all.filter(r => {
+    if (q && ![g(r,C.NAME),g(r,C.ROLL),g(r,C.EMAIL)].some(v=>v.toLowerCase().includes(q))) return false;
+    if (fpr === "yes" && !hasPri(r)) return false;
+    if (fpr === "no"  &&  hasPri(r)) return false;
+    if (fdom && !fmtDoms(g(r,C.DOMAINS)).includes(fdom)) return false;
+    if (favl && parseInt(g(r,C.AVAIL)) < favl) return false;
     return true;
   });
 
   document.getElementById("results-meta").textContent =
-    `Showing ${filtered.length} of ${allApplicants.length} applicants`;
+    `Showing ${filtered.length} of ${all.length} applicants`;
 
   const list = document.getElementById("list");
-  if (!filtered.length) { list.innerHTML = '<div class="empty">No candidates match your search.</div>'; return; }
-  list.innerHTML = filtered.map(row => cardHTML(row)).join("");
-
+  if (!filtered.length) {
+    list.innerHTML = '<div class="empty">No candidates match your filters.</div>';
+    return;
+  }
+  list.innerHTML = filtered.map((r, i) => cardHTML(r, i+1)).join("");
   list.querySelectorAll(".card").forEach(card => {
     card.addEventListener("click", () => {
-      const isOpen = card.classList.contains("open");
+      const was = card.classList.contains("open");
       list.querySelectorAll(".card").forEach(c => c.classList.remove("open"));
-      if (!isOpen) card.classList.add("open");
+      if (!was) card.classList.add("open");
     });
   });
 }
 
-function cardHTML(row) {
-  const name    = g(row, C.NAME) || "Unknown";
-  const roll    = g(row, C.ROLL) || "—";
-  const phone   = g(row, C.PHONE) || "—";
-  const email   = g(row, C.EMAIL) || "—";
-  const prior   = yes(g(row, C.PRIOR));
-  const avail   = AVAIL_MAP[g(row,C.AVAIL)]   || g(row,C.AVAIL)   || "—";
-  const team    = TEAM_MAP[g(row,C.TEAMEXP)]  || g(row,C.TEAMEXP) || "—";
-  const domains = fmtDoms(g(row,C.DOMAINS));
-  const nontech = fmtNon(g(row,C.NONTECH));
+// ── CARD ─────────────────────────────────────────────────────────
+function cardHTML(r, num) {
+  const name    = g(r, C.NAME)  || "Unknown";
+  const roll    = g(r, C.ROLL)  || "—";
+  const phone   = g(r, C.PHONE) || "—";
+  const email   = g(r, C.EMAIL) || "—";
+  const year    = g(r, C.YEAR)  || "—";
+  const prior   = hasPri(r);
+  const avail   = g(r, C.AVAIL);
+  const explvl  = g(r, C.EXPLVL);
+  const domains = fmtDoms(g(r, C.DOMAINS));
+  const nontech = fmtNon(g(r, C.NONTECH));
+  const cv      = g(r, C.CV);
+  const li      = g(r, C.LI);
+  const gh      = g(r, C.GH);
 
-  const domainTags = domains.map(d => `<span class="domain-tag">${d}</span>`).join("");
-  const linkBtns   = [
-    hasUrl(g(row,C.CV)) ? `<a class="link-btn" href="${g(row,C.CV)}" target="_blank">📄 CV</a>` : "",
-    hasUrl(g(row,C.LI)) ? `<a class="link-btn" href="${g(row,C.LI)}" target="_blank">💼 LinkedIn</a>` : "",
-    hasUrl(g(row,C.GH)) ? `<a class="link-btn" href="${g(row,C.GH)}" target="_blank">💻 GitHub</a>` : "",
+  const domPills  = domains.map(d=>`<span class="pill-dom">${d}</span>`).join("") || "<span style='color:var(--muted);font-size:.84rem'>—</span>";
+  const nonPills  = nontech.map(n=>`<span class="pill-non">${n}</span>`).join("") || "<span style='color:var(--muted);font-size:.84rem'>—</span>";
+  const linkBtns  = [
+    hasUrl(cv) ? `<a class="link-btn" href="${cv}" target="_blank" onclick="event.stopPropagation()">📄 CV</a>` : "",
+    hasUrl(li) ? `<a class="link-btn" href="${li}" target="_blank" onclick="event.stopPropagation()">💼 LinkedIn</a>` : "",
+    hasUrl(gh) ? `<a class="link-btn" href="${gh}" target="_blank" onclick="event.stopPropagation()">💻 GitHub</a>` : "",
   ].filter(Boolean).join("");
+
+  const priorDesc  = clean(g(r, C.PRIORDESC));
+  const project    = clean(g(r, C.PROJECT));
+  const events     = clean(g(r, C.EVENTS));
+  const priLabel   = prior ? "Yes" : "No — eager to start";
+  const availLabel = AVAIL_LBL[avail] || avail || "—";
+  const expLabel   = EXPLVL_LBL[explvl] || (explvl ? `${explvl}/5` : "—");
+  const availN     = parseInt(avail) || 0;
 
   return `
   <div class="card">
     <div class="card-hdr">
-      <div class="avatar">${initials(name)}</div>
+      <div class="avatar">${inits(name)}</div>
       <div>
-        <div class="card-name">${name}</div>
-        <div class="card-meta">Roll: ${roll} · ${phone}</div>
+        <div class="card-name"><span class="num-badge">#${num}</span>${name}</div>
+        <div class="card-sub">Roll: ${roll} · ${year}</div>
       </div>
       <div class="card-tags">
         ${domains.slice(0,2).map(d=>`<span class="tag">${d}</span>`).join("")}
-        <span class="tag ${prior?'yes':'no'}">${prior ? "Exp ✓" : "No Exp"}</span>
+        <span class="tag ${prior?'yes':'no'}">${prior?"Exp ✓":"No Exp"}</span>
       </div>
       <div class="chevron">▾</div>
     </div>
+
     <div class="card-detail">
-      <div class="section-title">Contact & Links</div>
-      <div class="detail-grid">
-        <div class="detail-cell"><div class="detail-label">Email</div><div class="detail-val">${email}</div></div>
-        <div class="detail-cell"><div class="detail-label">Phone</div><div class="detail-val">${phone}</div></div>
-        <div class="detail-cell"><div class="detail-label">Availability</div><div class="detail-val">${avail}</div></div>
-        <div class="detail-cell"><div class="detail-label">Team Experience</div><div class="detail-val">${team}</div></div>
+
+      <div class="sec">
+        <div class="sec-title">Contact</div>
+        <div class="grid-4">
+          <div class="cell"><div class="cell-lbl">Phone</div><div class="cell-val">${phone}</div></div>
+          <div class="cell"><div class="cell-lbl">Email</div><div class="cell-val" style="font-size:.8rem;word-break:break-all">${email}</div></div>
+          <div class="cell"><div class="cell-lbl">Academic Year</div><div class="cell-val">${year}</div></div>
+          <div class="cell"><div class="cell-lbl">Commitment</div><div class="cell-val">${g(r,C.COMMIT)||'—'}</div></div>
+        </div>
+        ${linkBtns ? `<div class="link-row" style="margin-top:.6rem">${linkBtns}</div>` : ""}
       </div>
-      ${linkBtns ? `<div class="links-row" style="margin-top:0.6rem">${linkBtns}</div>` : ""}
 
-      <div class="section-title">Technical Domains</div>
-      <div class="domain-wrap">${domainTags || "<span style='color:var(--muted);font-size:0.85rem'>—</span>"}</div>
+      <div class="sec">
+        <div class="sec-title">Profile</div>
+        <div class="grid-4">
+          <div class="cell">
+            <div class="cell-lbl">Availability</div>
+            <div class="cell-val">${availLabel}</div>
+            <div class="avail-bar">${availPips(availN)}</div>
+          </div>
+          <div class="cell">
+            <div class="cell-lbl">Experience Level</div>
+            <div class="cell-val">${expLabel}</div>
+            <div class="avail-bar">${availPips(parseInt(explvl)||0)}</div>
+          </div>
+          <div class="cell"><div class="cell-lbl">Prior Participation</div><div class="cell-val">${priLabel}</div></div>
+        </div>
+      </div>
 
-      <div class="section-title">Non-Technical Skills</div>
-      <div class="text-block">${nontech.length ? nontech.join(", ") : "—"}</div>
+      <div class="sec">
+        <div class="sec-title">Technical Domains</div>
+        <div class="pill-row">${domPills}</div>
+      </div>
 
-      <div class="section-title">Experience & Background</div>
-      <div class="text-block">${clean(g(row,C.EXPDESC))}</div>
+      <div class="sec">
+        <div class="sec-title">Non-Technical Skills</div>
+        <div class="pill-row">${nonPills}</div>
+      </div>
 
-      <div class="section-title">Projects / Technical Work</div>
-      <div class="text-block">${clean(g(row,C.PROJECT))}</div>
+      <div class="sec">
+        <div class="sec-title">Prior Experience / How They'd Get Involved</div>
+        <div class="textblock">${priorDesc}</div>
+      </div>
 
-      <div class="section-title">EEE Makers Hub Events Attended</div>
-      <div class="text-block">${clean(g(row,C.EVENTS))}</div>
+      <div class="sec">
+        <div class="sec-title">Most Significant Project / Achievement</div>
+        <div class="textblock">${project}</div>
+      </div>
+
+      <div class="sec">
+        <div class="sec-title">EEE Makers Hub Events Attended</div>
+        <div class="textblock">${events}</div>
+      </div>
+
     </div>
   </div>`;
 }
