@@ -271,10 +271,11 @@ function loadCSV() {
     .then(r => { if (!r.ok) throw new Error("HTTP " + r.status); return r.text(); })
     .then(text => {
       const rows = parseCSV(text).slice(1).filter(r => (r[C.ROLL]||"").trim());
-      // deduplicate — keep last submission per roll
-      const seen = {};
-      rows.forEach(r => { seen[r[C.ROLL].trim()] = r; });
-      all = Object.values(seen);
+      // // deduplicate — keep last submission per roll
+      // const seen = {};
+      // rows.forEach(r => { seen[r[C.ROLL].trim()] = r; });
+      // all = Object.values(seen);
+      all = rows
       buildDomainFilter();
       document.getElementById("topbar-count").textContent = all.length + " candidates loaded";
       render();
