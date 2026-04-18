@@ -120,7 +120,6 @@
   .cell-lbl { font-size: .64rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 3px; }
   .cell-val { font-size: .86rem; color: var(--text); font-weight: 500; line-height: 1.4; word-break: break-word; }
 
-  /* Upgraded Text Block Handling */
   .textblock { 
     background: var(--cream); border-radius: 8px; padding: .7rem .9rem; 
     font-size: .84rem; line-height: 1.7; color: var(--text); 
@@ -199,7 +198,7 @@
 <script>
 // ── CONFIGURATION ─────────────────────────────────────────────────
 const PASSWORD = "eeemakers2025";
-const CSV_PATH = "data/responses.csv";
+const CSV_PATH = "data/clean_responses.csv"; // <-- Make sure to use the newly generated file
 
 // ── Column map (0-based) ─────────────────────────────────────────
 const C = {
@@ -238,26 +237,19 @@ function checkPw() {
 }
 document.getElementById("pw-input").addEventListener("keydown", e => { if (e.key === "Enter") checkPw(); });
 
-// ── UPGRADED CSV PARSER ───────────────────────────────────────────
-// This perfectly handles real "Enter" linebreaks inside Google Form textboxes
+// ── SIMPLE & SAFE CSV PARSER ──────────────────────────────────────
 function parseCSV(text) {
-  const out = [];
-  let row = [], cur = "", inQ = false;
-  for (let i = 0; i < text.length; i++) {
-    const ch = text[i];
-    if (ch === '"') {
-      if (inQ && text[i+1] === '"') { cur += '"'; i++; } // Escaped quotes
-      else { inQ = !inQ; }
+  const lines = text.trim().split(/\r?\n/);
+  return lines.map(line => {
+    const out = []; let cur = "", inQ = false;
+    for (const ch of line) {
+      if (ch === '"') { inQ = !inQ; }
+      else if (ch === ',' && !inQ) { out.push(cur.trim()); cur = ""; }
+      else cur += ch;
     }
-    else if (ch === ',' && !inQ) { row.push(cur.trim()); cur = ""; }
-    else if ((ch === '\n' || ch === '\r') && !inQ) {
-      if (ch === '\r' && text[i+1] === '\n') i++;
-      row.push(cur.trim()); out.push(row); row = []; cur = "";
-    }
-    else cur += ch;
-  }
-  if (cur || row.length) { row.push(cur.trim()); out.push(row); }
-  return out;
+    out.push(cur.trim());
+    return out;
+  });
 }
 
 function loadCSV() {
@@ -274,7 +266,7 @@ function loadCSV() {
     })
     .catch(err => {
       document.getElementById("list").innerHTML =
-        `<div class="empty">⚠ Could not load data (${err.message})<br>Make sure <code>data/responses.csv</code> exists and you are running a local server.</div>`;
+        `<div class="empty">⚠ Could not load data (${err.message})<br>Make sure <code>data/clean_responses.csv</code> exists and you are running a local server.</div>`;
     });
 }
 
@@ -313,48 +305,22 @@ const makeUrl = s => {
   return url;
 };
 
-// ── DOM-BASED TEXT FORMATTER (Bulletproof, zero HTML bleeding) ────
+// ── NEW TEXT FORMATTER (Safely Converts Tokens & Links) ───────────
+const escapeHTML = str => str.replace(/[&<>'"]/g, tag => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'}[tag]));
+
 const formatText = text => {
   if (blank(text)) return "—";
   
-  const div = document.createElement('div');
-  const lines = text.split(/\r?\n/);
+  // 1. Escape HTML first so people can't inject malicious <div> or <script> tags
+  let safeText = escapeHTML(text);
   
-  lines.forEach((line, index) => {
-    // Split the line by URLs, keeping the URL as a separate item in the array
-    const parts = line.split(/(https?:\/\/[^\s]+)/g);
-    
-    parts.forEach(part => {
-      if (part.startsWith('http')) {
-        let url = part;
-        let punctuation = "";
-        
-        // Strip out periods/commas if a student ended their sentence right after the link!
-        if (/[.,;!?)]$/.test(url)) {
-          punctuation = url.slice(-1);
-          url = url.slice(0, -1);
-        }
-        
-        const a = document.createElement('a');
-        a.href = url;
-        a.target = '_blank';
-        a.onclick = e => e.stopPropagation();
-        a.textContent = url;
-        div.appendChild(a);
-        
-        if (punctuation) div.appendChild(document.createTextNode(punctuation));
-      } else if (part) {
-        div.appendChild(document.createTextNode(part));
-      }
-    });
-    
-    // Add real <br> elements between lines instead of string tags
-    if (index < lines.length - 1) {
-      div.appendChild(document.createElement('br'));
-    }
-  });
+  // 2. Auto-detect and linkify URLs
+  safeText = safeText.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank" onclick="event.stopPropagation()">$1</a>');
   
-  return div.innerHTML;
+  // 3. Replace our Python-generated [NEWLINE] token with a safe HTML break
+  safeText = safeText.replace(/\[NEWLINE\]/g, '<br><br>');
+  
+  return safeText;
 };
 
 // ── RENDER ────────────────────────────────────────────────────────
